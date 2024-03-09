@@ -1,0 +1,15 @@
+program Lpt_test_x64_w;
+
+uses
+  Vcl.Forms,
+  uLpt_test_x64 in '..\LPT_Test_x64\uLpt_test_x64.pas' {MainForm},
+  Structs in '..\LPT_Test_x64\Structs.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.
