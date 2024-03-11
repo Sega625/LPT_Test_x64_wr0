@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 166
   Caption = 'LPT Tester x64 (Ring0)'
   ClientHeight = 780
-  ClientWidth = 684
+  ClientWidth = 628
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -154,7 +154,7 @@ object MainForm: TMainForm
     Top = 48
     Width = 347
     Height = 126
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Data '
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Data  (PIR/PDR) '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -490,6 +490,12 @@ object MainForm: TMainForm
       Width = 75
       Height = 25
       Caption = #1057#1095#1080#1090#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnClick = ReadDataBtnClick
     end
@@ -499,6 +505,12 @@ object MainForm: TMainForm
       Width = 79
       Height = 25
       Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = WriteDataBtnClick
     end
@@ -516,12 +528,12 @@ object MainForm: TMainForm
     Top = 303
     Width = 347
     Height = 126
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Control'
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Control (PCR) '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
     object C0_Btn: TSpeedButton
@@ -886,6 +898,12 @@ object MainForm: TMainForm
       Width = 75
       Height = 25
       Caption = #1057#1095#1080#1090#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnClick = ReadControlBtnClick
     end
@@ -895,6 +913,12 @@ object MainForm: TMainForm
       Width = 79
       Height = 25
       Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = WriteControlBtnClick
     end
@@ -904,12 +928,12 @@ object MainForm: TMainForm
     Top = 176
     Width = 347
     Height = 126
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Status'
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Status (PSR) '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
     object S3_Btn: TSpeedButton
@@ -1277,12 +1301,12 @@ object MainForm: TMainForm
     Top = 431
     Width = 347
     Height = 112
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP Address '
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP (PXR)  '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 4
     object EA0_Btn: TSpeedButton
@@ -1543,6 +1567,12 @@ object MainForm: TMainForm
       Width = 75
       Height = 25
       Caption = #1057#1095#1080#1090#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnClick = ReadEPPAddrBtnClick
     end
@@ -1552,6 +1582,12 @@ object MainForm: TMainForm
       Width = 79
       Height = 25
       Caption = #1047#1072#1087#1080#1089#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnClick = WriteEPPAddrBtnClick
     end
@@ -2139,21 +2175,12 @@ object MainForm: TMainForm
       OnClick = WriteESRBtnClick
     end
   end
-  object EPPTestBtn: TBitBtn
-    Left = 493
-    Top = 684
-    Width = 161
-    Height = 40
-    Caption = 'EPP Test Start'
-    TabOrder = 8
-    OnClick = EPPTestBtnClick
-  end
   object AddrEdit: TEdit
     Left = 151
     Top = 25
     Width = 43
     Height = 23
-    TabOrder = 9
+    TabOrder = 8
     OnKeyPress = AddrEditKeyPress
   end
   object ChangeAddrBtn: TBitBtn
@@ -2162,22 +2189,7 @@ object MainForm: TMainForm
     Width = 64
     Height = 25
     Caption = #1057#1084#1077#1085#1080#1090#1100
-    TabOrder = 10
+    TabOrder = 9
     OnClick = ChangeAddrBtnClick
-  end
-  object EPPTestStopBtn: TBitBtn
-    Left = 493
-    Top = 730
-    Width = 161
-    Height = 40
-    Caption = 'EPP Test Stop'
-    TabOrder = 11
-    OnClick = EPPTestStopBtnClick
-  end
-  object Timer1: TTimer
-    Enabled = False
-    OnTimer = Timer1Timer
-    Left = 624
-    Top = 648
   end
 end

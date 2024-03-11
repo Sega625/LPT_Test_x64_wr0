@@ -135,14 +135,11 @@ type
     WriteESRBtn: TBitBtn;
     Label54: TLabel;
     ECRLab: TLabel;
-    EPPTestBtn: TBitBtn;
     PortLab: TLabel;
     AddrLab: TLabel;
     AddrEdit: TEdit;
     ChangeAddrBtn: TBitBtn;
     Label20: TLabel;
-    Timer1: TTimer;
-    EPPTestStopBtn: TBitBtn;
     Label55: TLabel;
     Label56: TLabel;
     Label57: TLabel;
@@ -180,11 +177,8 @@ type
     procedure ReadECRBtnClick(Sender: TObject);
     procedure ECRBtnClick(Sender: TObject);
     procedure WriteESRBtnClick(Sender: TObject);
-    procedure EPPTestBtnClick(Sender: TObject);
     procedure ChangeAddrBtnClick(Sender: TObject);
     procedure AddrEditKeyPress(Sender: TObject; var Key: Char);
-    procedure Timer1Timer(Sender: TObject);
-    procedure EPPTestStopBtnClick(Sender: TObject);
     procedure LPTPortsCBChange(Sender: TObject);
     procedure HChBoxClick(Sender: TObject);
   private
@@ -727,28 +721,6 @@ procedure TMainForm.LPTPortsCBChange(Sender: TObject);
 begin
   //
 end;
-
-procedure TMainForm.EPPTestBtnClick(Sender: TObject);
-begin
-  Timer1.Enabled := True;
-end;
-
-
-
-
-procedure TMainForm.EPPTestStopBtnClick(Sender: TObject);
-begin
-  Timer1.Enabled := False;
-end;
-
-procedure TMainForm.Timer1Timer(Sender: TObject);
-begin
-  Odd := not Odd;
-//  Out32(Base_LPT_Addr+3, 1);
-  if Odd then Ring0.WriteIoPortByte(Base_LPT_Addr+3, 0)
-         else Ring0.WriteIoPortByte(Base_LPT_Addr+3, 1);
-end;
-
 
 
 end.
