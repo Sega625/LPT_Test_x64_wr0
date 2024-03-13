@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 166
   Caption = 'LPT Tester x64 (Ring0)'
   ClientHeight = 780
-  ClientWidth = 628
+  ClientWidth = 730
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -520,6 +520,7 @@ object MainForm: TMainForm
       Width = 16
       Height = 16
       TabOrder = 2
+      Visible = False
       OnClick = HChBoxClick
     end
   end
@@ -2191,5 +2192,83 @@ object MainForm: TMainForm
     Caption = #1057#1084#1077#1085#1080#1090#1100
     TabOrder = 9
     OnClick = ChangeAddrBtnClick
+  end
+  object EPPGroup: TGroupBox
+    Left = 496
+    Top = 98
+    Width = 185
+    Height = 204
+    Caption = ' '#1056#1077#1078#1080#1084' EPP '
+    TabOrder = 10
+    object DataEPPLab: TLabel
+      Left = 79
+      Top = 96
+      Width = 27
+      Height = 21
+      Caption = '$00'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object InitEPPBtn: TBitBtn
+      Left = 39
+      Top = 34
+      Width = 113
+      Height = 25
+      Caption = #1048#1085#1080#1094#1080#1083#1080#1079#1072#1094#1080#1103
+      TabOrder = 0
+      OnClick = InitEPPBtnClick
+    end
+    object WriteToPDR: TBitBtn
+      Left = 55
+      Top = 122
+      Width = 79
+      Height = 25
+      Caption = #1055#1086#1089#1083#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      OnClick = WriteToPDRClick
+    end
+    object ReadFromPDR: TBitBtn
+      Left = 55
+      Top = 162
+      Width = 79
+      Height = 25
+      Caption = #1055#1086#1083#1091#1095#1080#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      OnClick = ReadFromPDRClick
+    end
+  end
+  object InitBtn: TBitBtn
+    Left = 535
+    Top = 48
+    Width = 113
+    Height = 25
+    Caption = #1048#1085#1080#1094#1080#1083#1080#1079#1072#1094#1080#1103
+    TabOrder = 11
+    OnClick = InitBtnClick
+  end
+  object BitBtn1: TBitBtn
+    Left = 535
+    Top = 510
+    Width = 113
+    Height = 25
+    Caption = 'Info'
+    TabOrder = 12
+    OnClick = BitBtn1Click
   end
 end

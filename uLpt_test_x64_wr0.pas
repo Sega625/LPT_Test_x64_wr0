@@ -7,6 +7,8 @@ uses
   Structs, ActiveX, Vcl.ExtCtrls, WinRing0;
 
 type
+  TByte = array[0..7] of Char;
+
   TMainForm = class(TForm)
     LPTPortsCB: TComboBox;
     DataGroupBox: TGroupBox;
@@ -158,6 +160,13 @@ type
     Label64: TLabel;
     Label65: TLabel;
     Label66: TLabel;
+    EPPGroup: TGroupBox;
+    InitEPPBtn: TBitBtn;
+    InitBtn: TBitBtn;
+    WriteToPDR: TBitBtn;
+    DataEPPLab: TLabel;
+    ReadFromPDR: TBitBtn;
+    BitBtn1: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Data_BtnClick(Sender: TObject);
@@ -181,6 +190,13 @@ type
     procedure AddrEditKeyPress(Sender: TObject; var Key: Char);
     procedure LPTPortsCBChange(Sender: TObject);
     procedure HChBoxClick(Sender: TObject);
+    procedure InitEPPBtnClick(Sender: TObject);
+    procedure WriteToPDRClick(Sender: TObject);
+
+    procedure LBtnMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure InitBtnClick(Sender: TObject);
+    procedure ReadFromPDRClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
   private
     Ring0: TWinRing0;
 
@@ -190,10 +206,13 @@ type
     Odd: Boolean;
 
     D, S, C, EA, ED, ECR: array[0..7] of TSpeedButton;
+    L: array [0..7] of TLabel;
 
-    function HexToInt(Val: String): WORD;
+    function GetDataFromLabs(): byte;
+
+//    function
   public
-    { Public declarations }
+
   end;
 
 var
@@ -206,7 +225,7 @@ implementation
 //////////////////////////////////////////////////////////////////////
 procedure TMainForm.FormCreate(Sender: TObject);                    //
 var                                                                 //
-  n: byte;                                                          //
+  n, offset: byte;                                                  //
   LPTHandle: THandle;                                               //
 begin                                                               //
   Ring0 := TWinRing0.Create();                                      //
@@ -228,7 +247,7 @@ begin                                                               //
         LPTPortsCB.Items.Add('LPT'+inttostr(n+1));                  //
         LPTPortsCB.ItemIndex := 0;                                  //
 
-//        LPTHandle.
+
       end;                                                          //
     finally                                                         //
       CloseHandle(LPTHandle);                                       //
@@ -369,6 +388,29 @@ begin                                                               //
       GroupIndex := 0;                                              //
     end;                                                            //
                                                                     //
+  offset := 0;
+  for n := 0 to 7 do
+  begin
+    L[n] := TLabel.Create(self);
+    with L[n] do
+    begin
+      if (n mod 4) = 0 then Inc(offset, 4);
+      Left := 50+n*10+offset;
+      Top  := 75;
+      Parent := EPPGroup;
+
+      Font.Size := 14;
+      Font.Color := clBlue;
+      Font.Name := 'Tahoma';
+      Caption := '0';
+
+      Tag := n;
+
+      OnMouseDown := LBtnMouseDown;
+    end;
+  end;
+
+
   Stop := False;                                                    //
   Odd := True;
 end;                                                                //
@@ -381,6 +423,7 @@ end;                                                                //
 //////////////////////////////////////////////////////////////////////
 
 
+
 procedure TMainForm.ChangeAddrBtnClick(Sender: TObject);
 begin
   Base_LPT_Addr := StrToInt('$'+AddrEdit.Text);
@@ -391,6 +434,15 @@ procedure TMainForm.AddrEditKeyPress(Sender: TObject; var Key: Char);
 begin
   if not (char (Key) in ['a'..'f', 'A'..'F', '0'..'9', #8]) or
     (length ((Sender as TEdit).Text) >= 4) then Key := #0;
+end;
+
+
+procedure TMainForm.LBtnMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if TLabel(Sender).Caption = '0' then TLabel(Sender).Caption := '1'
+                                  else TLabel(Sender).Caption := '0';
+
+  DataEPPLab.Caption := '$'+IntToHex(GetDataFromLabs());
 end;
 
 
@@ -665,8 +717,8 @@ begin
     begin
 //      Out32(Base_LPT_Addr, 0);
 //      Out32(Base_LPT_Addr, 1);
-      Ring0.WriteIoPortByte(Base_LPT_Addr+0, 0);
-      Ring0.WriteIoPortByte(Base_LPT_Addr+0, 1);
+      Ring0.WriteIoPortByte(Base_LPT_Addr+3, 0);
+      Ring0.WriteIoPortByte(Base_LPT_Addr+3, 1);
 
       Application.ProcessMessages();
 
@@ -707,20 +759,121 @@ begin
   end;
 end;
 
-function TMainForm.HexToInt(Val: String): WORD;
-var
-  n: byte;
+
+procedure TMainForm.InitBtnClick(Sender: TObject);
 begin
-  for n := 0 to 3 do
-  begin
-    //
-  end;
+  Ring0.WriteIoPortByte(Base_LPT_Addr+0, $00); // PDR
+  Ring0.WriteIoPortByte(Base_LPT_Addr+2, $C0); // PCR
+  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $00); // PXR
 end;
+
+procedure TMainForm.InitEPPBtnClick(Sender: TObject);
+begin
+  Ring0.WriteIoPortByte(Base_LPT_Addr+2, $24); // PCR (XX0X 0100) nWrite High, nDataStr High, Reset High, nAddrStr High
+//  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $04); // PXR (XXXX 01XX) EPP Mode-On, Data on (0) (Addr on (1))
+  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $0C);
+end;
+
 
 procedure TMainForm.LPTPortsCBChange(Sender: TObject);
 begin
   //
 end;
+
+procedure TMainForm.WriteToPDRClick(Sender: TObject);
+var
+  Buff: byte;
+  Str: string;
+begin
+
+  Str := Copy(DataEPPLab.Caption, 2, 2);;
+
+  HexToBin(PChar(Str), Buff, 8);
+  Ring0.WriteIoPortByte(Base_LPT_Addr+0, Buff);
+
+
+//  Ring0.WriteIoPortByte(Base_LPT_Addr+0, 1);
+//  Ring0.WriteIoPortByte(Base_LPT_Addr+0, 0);
+//  Ring0.WriteIoPortByte(Base_LPT_Addr+0, 1);
+end;
+
+procedure TMainForm.ReadFromPDRClick(Sender: TObject);
+var                                                       //
+  D: byte;                                                //
+begin                                                     //
+  D := Ring0.ReadIoPortByte(Base_LPT_Addr+0);          //
+  DataEPPLab.Caption := ByteToStr(D);                     //
+end;
+
+
+function TMainForm.GetDataFromLabs(): byte;
+var
+  n: byte;
+begin
+  Result := 0;
+
+  for n := 0 to 7 do
+  begin
+    Result := Result+(StrToInt(L[7-n].Caption) shl n);
+  end;
+end;
+
+
+
+
+
+procedure TMainForm.BitBtn1Click(Sender: TObject);
+var
+  LPTHandle: THandle;
+  n: byte;
+  Mode: PARCLASS_NEGOTIATION_MASK;
+  lpOverlapped: POverlapped;
+  ret: DWORD;
+  Address: byte;
+begin
+//  for n := 0 to 9 do
+  begin
+//    LPTHandle := CreateFile(PChar('LPT'+IntToStr(n+1)),
+    LPTHandle := CreateFile(PChar('LPT3'),
+      GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING,
+        FILE_FLAG_OVERLAPPED, 0);
+
+    try
+      if LPTHandle <> INVALID_HANDLE_VALUE then
+      begin
+        LPTPortsCB.Items.Add('LPT'+IntToStr(n+1));
+        LPTPortsCB.ItemIndex := 0;
+
+//        SetLength(LPTInfo, Length(LPTInfo)+1);
+//        LPTInfo[Length(LPTInfo)-1].Name := 'LPT'+IntToStr(n+1); // Добавим имя lpt порта
+//        LPTInfo[Length(LPTInfo)-1].VendorID := 0;
+//        LPTInfo[Length(LPTInfo)-1].DeviceID := 0;
+
+ //       if not GetLPTInfo(LPTInfo[Length(LPTInfo)-1]) then Break;
+
+
+
+
+        DeviceIoControl(LPTHandle, IOCTL_PAR_GET_DEVICE_CAPS, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
+//        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID,
+//        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, lpOverlapped);
+//        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
+
+//        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
+
+        ShowMessage('LPT'+IntToStr(n+1)+': Read mode - '+IntToStr(Mode.usReadMask)+'   Write mode - '+IntToStr(Mode.usWriteMask));
+
+        Address := $AA;
+        DeviceIoControl(LPTHandle, IOCTL_PAR_SET_WRITE_ADDRESS, @Address, 1, nil, 0, ret, nil);
+        WriteFile(LPTHandle, [$55], 1, ret, nil);
+      end;                                                          //
+    finally                                                         //
+      CloseHandle(LPTHandle);                                       //
+    end;                                                            //
+  end;
+end;
+
+
 
 
 end.

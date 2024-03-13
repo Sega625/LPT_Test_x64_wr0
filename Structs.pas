@@ -5,6 +5,48 @@ interface
 uses
   Windows, SysUtils;
 
+const
+  IOCTL_IEEE1284_GET_MODE        = $160014;
+  IOCTL_IEEE1284_NEGOTIATE       = $160018;
+  IOCTL_PAR_GET_DEFAULT_MODES    = $160028;
+  IOCTL_PAR_GET_DEVICE_CAPS      = $160024;
+  IOCTL_PAR_IS_PORT_FREE         = $160054;
+  IOCTL_PAR_QUERY_DEVICE_ID      = $16000C;
+  IOCTL_PAR_QUERY_DEVICE_ID_SIZE = $160010;
+  IOCTL_PAR_QUERY_INFORMATION    = $160004;
+  IOCTL_PAR_QUERY_LOCATION       = $160058;
+  IOCTL_PAR_QUERY_RAW_DEVICE_ID  = $160030;
+  IOCTL_PAR_SET_INFORMATION      = $160008;
+  IOCTL_PAR_SET_READ_ADDRESS     = $160020;
+  IOCTL_PAR_SET_WRITE_ADDRESS    = $16001C;
+  IOCTL_SERIAL_GET_TIMEOUTS      = $1B001C;
+  IOCTL_SERIAL_SET_TIMEOUTS      = $1B0020;
+
+	NONE	= $0000;
+
+// SPP modes
+	CENTRONICS	= $0001;	// Только для записи
+	IEEE_COMPATIBILITY	= $0002;	// Только для записи
+	NIBBLE	= $0004;	// Только для чтения
+	CHANNEL_NIBBLE	= $0008;	// Только для чтения
+	BYTE_BIDIR	= $0010;	// Только для чтения
+
+// EPP modes
+	EPP_HW	= $0020;	// Аппаратный EPP
+	EPP_SW	= $0040;	// Программный EPP
+
+// ECP modes
+	BOUNDED_ECP	= $0080;	// Упрощенный ECP
+	ECP_HW_NOIRQ	= $0100;	// Аппаратный ECP без IRQ
+	ECP_HW_IRQ	= $0200;	// Аппаратный ECP с IRQ
+	ECP_SW	= $0400;	// Программный ECP
+
+type
+  PARCLASS_NEGOTIATION_MASK = record
+    usReadMask: word;
+    usWriteMask: word;
+  end;
+  PPARCLASS_NEGOTIATION_MASK = ^PARCLASS_NEGOTIATION_MASK;
 
 //const
 //  {$IFDEF WIN32}
