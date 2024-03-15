@@ -11,12 +11,13 @@ object MainForm: TMainForm
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poDesigned
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   TextHeight = 15
   object AdrLab: TLabel
     Left = 8
-    Top = 98
+    Top = 68
     Width = 58
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089': '
@@ -29,7 +30,7 @@ object MainForm: TMainForm
   end
   object Label18: TLabel
     Left = 9
-    Top = 231
+    Top = 197
     Width = 65
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089'+1'
@@ -42,7 +43,7 @@ object MainForm: TMainForm
   end
   object Label19: TLabel
     Left = 9
-    Top = 361
+    Top = 323
     Width = 67
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089'+2'
@@ -55,7 +56,7 @@ object MainForm: TMainForm
   end
   object Label38: TLabel
     Left = 9
-    Top = 471
+    Top = 434
     Width = 67
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089'+3'
@@ -68,7 +69,7 @@ object MainForm: TMainForm
   end
   object Label39: TLabel
     Left = 9
-    Top = 587
+    Top = 550
     Width = 67
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089'+4'
@@ -81,7 +82,7 @@ object MainForm: TMainForm
   end
   object Label54: TLabel
     Left = 9
-    Top = 702
+    Top = 665
     Width = 88
     Height = 17
     Caption = #1041'. '#1072#1076#1088#1077#1089'+$402'
@@ -98,32 +99,6 @@ object MainForm: TMainForm
     Width = 32
     Height = 17
     Caption = #1055#1086#1088#1090
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Segoe UI'
-    Font.Style = []
-    ParentFont = False
-  end
-  object AddrLab: TLabel
-    Left = 156
-    Top = 4
-    Width = 94
-    Height = 17
-    Caption = #1041#1072#1079#1086#1074#1099#1081' '#1072#1076#1088#1077#1089
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Segoe UI'
-    Font.Style = []
-    ParentFont = False
-  end
-  object Label20: TLabel
-    Left = 141
-    Top = 26
-    Width = 7
-    Height = 17
-    Caption = '$'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -151,15 +126,15 @@ object MainForm: TMainForm
   end
   object DataGroupBox: TGroupBox
     Left = 120
-    Top = 48
+    Top = 8
     Width = 347
     Height = 126
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Data  (PIR/PDR) '
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Data (PIR/PDR) '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 1
     object D0_Btn: TSpeedButton
@@ -526,7 +501,7 @@ object MainForm: TMainForm
   end
   object ControlGroupBox: TGroupBox
     Left = 120
-    Top = 303
+    Top = 263
     Width = 347
     Height = 126
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Control (PCR) '
@@ -926,7 +901,7 @@ object MainForm: TMainForm
   end
   object StatusGroupBox: TGroupBox
     Left = 120
-    Top = 176
+    Top = 136
     Width = 347
     Height = 126
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' Status (PSR) '
@@ -1299,10 +1274,10 @@ object MainForm: TMainForm
   end
   object GroupBox1: TGroupBox
     Left = 120
-    Top = 431
+    Top = 391
     Width = 347
     Height = 112
-    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP (PXR)  '
+    Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP Address (PXR)  '
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -1595,7 +1570,7 @@ object MainForm: TMainForm
   end
   object GroupBox2: TGroupBox
     Left = 120
-    Top = 545
+    Top = 506
     Width = 347
     Height = 112
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP Data '
@@ -1894,7 +1869,7 @@ object MainForm: TMainForm
   end
   object GroupBox3: TGroupBox
     Left = 120
-    Top = 660
+    Top = 620
     Width = 347
     Height = 111
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' ECP '
@@ -2176,30 +2151,16 @@ object MainForm: TMainForm
       OnClick = WriteESRBtnClick
     end
   end
-  object AddrEdit: TEdit
-    Left = 151
-    Top = 25
-    Width = 43
-    Height = 23
-    TabOrder = 8
-    OnKeyPress = AddrEditKeyPress
-  end
-  object ChangeAddrBtn: TBitBtn
-    Left = 192
-    Top = 24
-    Width = 64
-    Height = 25
-    Caption = #1057#1084#1077#1085#1080#1090#1100
-    TabOrder = 9
-    OnClick = ChangeAddrBtnClick
-  end
   object EPPGroup: TGroupBox
     Left = 496
     Top = 98
     Width = 185
-    Height = 204
+    Height = 231
     Caption = ' '#1056#1077#1078#1080#1084' EPP '
-    TabOrder = 10
+    Color = clBtnFace
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 8
     object DataEPPLab: TLabel
       Left = 79
       Top = 96
@@ -2210,6 +2171,19 @@ object MainForm: TMainForm
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object rDataEPPLab: TLabel
+      Left = 58
+      Top = 176
+      Width = 72
+      Height = 19
+      Caption = '00000000'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -2239,7 +2213,7 @@ object MainForm: TMainForm
     end
     object ReadFromPDR: TBitBtn
       Left = 55
-      Top = 162
+      Top = 198
       Width = 79
       Height = 25
       Caption = #1055#1086#1083#1091#1095#1080#1090#1100
@@ -2259,7 +2233,7 @@ object MainForm: TMainForm
     Width = 113
     Height = 25
     Caption = #1048#1085#1080#1094#1080#1083#1080#1079#1072#1094#1080#1103
-    TabOrder = 11
+    TabOrder = 9
     OnClick = InitBtnClick
   end
   object BitBtn1: TBitBtn
@@ -2268,7 +2242,7 @@ object MainForm: TMainForm
     Width = 113
     Height = 25
     Caption = 'Info'
-    TabOrder = 12
+    TabOrder = 10
     OnClick = BitBtn1Click
   end
 end

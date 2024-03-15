@@ -3,8 +3,9 @@ unit uLpt_test_x64_wr0;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
-  Structs, ActiveX, Vcl.ExtCtrls, WinRing0;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
+  Structs, WinRing0, GetPCILPTInfo;
 
 type
   TByte = array[0..7] of Char;
@@ -138,10 +139,6 @@ type
     Label54: TLabel;
     ECRLab: TLabel;
     PortLab: TLabel;
-    AddrLab: TLabel;
-    AddrEdit: TEdit;
-    ChangeAddrBtn: TBitBtn;
-    Label20: TLabel;
     Label55: TLabel;
     Label56: TLabel;
     Label57: TLabel;
@@ -167,6 +164,7 @@ type
     DataEPPLab: TLabel;
     ReadFromPDR: TBitBtn;
     BitBtn1: TBitBtn;
+    rDataEPPLab: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Data_BtnClick(Sender: TObject);
@@ -186,9 +184,7 @@ type
     procedure ReadECRBtnClick(Sender: TObject);
     procedure ECRBtnClick(Sender: TObject);
     procedure WriteESRBtnClick(Sender: TObject);
-    procedure ChangeAddrBtnClick(Sender: TObject);
     procedure AddrEditKeyPress(Sender: TObject; var Key: Char);
-    procedure LPTPortsCBChange(Sender: TObject);
     procedure HChBoxClick(Sender: TObject);
     procedure InitEPPBtnClick(Sender: TObject);
     procedure WriteToPDRClick(Sender: TObject);
@@ -197,8 +193,12 @@ type
     procedure InitBtnClick(Sender: TObject);
     procedure ReadFromPDRClick(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
+    procedure LPTPortsCBChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
     Ring0: TWinRing0;
+    PCILPTInfo: TPCILPTInfo;
+    LPTInfo: TLPTInfoMass;
 
     Base_LPT_Addr: DWORD;
     Data, Control, Status, EAddress, EData, ECRreg: byte;
@@ -209,8 +209,6 @@ type
     L: array [0..7] of TLabel;
 
     function GetDataFromLabs(): byte;
-
-//    function
   public
 
   end;
@@ -226,32 +224,29 @@ implementation
 procedure TMainForm.FormCreate(Sender: TObject);                    //
 var                                                                 //
   n, offset: byte;                                                  //
-  LPTHandle: THandle;                                               //
 begin                                                               //
   Ring0 := TWinRing0.Create();                                      //
-  if Ring0.GetStatus <> NO_ERROR then                               //
+  if not Ring0.DLL.IsLoaded then                                    //
   begin                                                             //
     MessageDlg('Ошибка драйвера WRing0', mtError, [mbOK], 0);       //
     Application.Terminate;                                          //
   end;                                                              //
                                                                     //
-  for n := 0 to 9 do                                                //
-  begin                                                             //
-    LPTHandle := CreateFile(PChar(WideString('LPT'+IntToStr(n+1))), //
-      GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING,         //
-        FILE_FLAG_OVERLAPPED, 0);                                   //
+  PCILPTInfo := TPCILPTInfo.Create();                               //
+  LPTInfo := PCILPTInfo.GetInfo();                                  //
                                                                     //
-    try                                                             //
-      if LPTHandle <> INVALID_HANDLE_VALUE then                     //
-      begin                                                         //
-        LPTPortsCB.Items.Add('LPT'+inttostr(n+1));                  //
-        LPTPortsCB.ItemIndex := 0;                                  //
-
-
-      end;                                                          //
-    finally                                                         //
-      CloseHandle(LPTHandle);                                       //
-    end;                                                            //
+  if Length(LPTInfo) > 0 then                                       //
+  begin                                                             //
+    for n :=0 to Length(LPTInfo)-1 do                               //
+      LPTPortsCB.Items.Add(LPTInfo[n].Name);                        //
+    LPTPortsCB.ItemIndex := 0;                                      //
+                                                                    //
+    LPTPortsCBChange(Self);                                         //
+  end                                                               //
+  else                                                              //
+  begin                                                             //
+    MessageDlg('Не найдено PCIe LPT портов', mtError, [mbOK], 0);   //
+    Application.Terminate;                                          //
   end;                                                              //
                                                                     //
   Data     := 0;                                                    //
@@ -260,11 +255,6 @@ begin                                                               //
   EAddress := 0;                                                    //
   EData    := 0;                                                    //
   ECRreg   := 0;                                                    //
-                                                                    //
-//  AddrEdit.Text := '3FF8';                                          //
-  AddrEdit.Text := '4EFC';                                          //
-  Base_LPT_Addr := StrToInt('$'+AddrEdit.Text);                     //
-  AdrLab.Caption := 'Б. адрес: : $'+IntToHex(Base_LPT_Addr, 4);     //
                                                                     //
   D[0] := D0_Btn;                                                   //
   D[1] := D1_Btn;                                                   //
@@ -388,47 +378,47 @@ begin                                                               //
       GroupIndex := 0;                                              //
     end;                                                            //
                                                                     //
-  offset := 0;
-  for n := 0 to 7 do
-  begin
-    L[n] := TLabel.Create(self);
-    with L[n] do
-    begin
-      if (n mod 4) = 0 then Inc(offset, 4);
-      Left := 50+n*10+offset;
-      Top  := 75;
-      Parent := EPPGroup;
-
-      Font.Size := 14;
-      Font.Color := clBlue;
-      Font.Name := 'Tahoma';
-      Caption := '0';
-
-      Tag := n;
-
-      OnMouseDown := LBtnMouseDown;
-    end;
-  end;
-
-
+  offset := 0;                                                      //
+  for n := 0 to 7 do                                                //
+  begin                                                             //
+    L[n] := TLabel.Create(self);                                    //
+    with L[n] do                                                    //
+    begin                                                           //
+      if (n mod 4) = 0 then Inc(offset, 4);                         //
+      Left := 50+n*10+offset;                                       //
+      Top  := 75;                                                   //
+      Parent := EPPGroup;                                           //
+                                                                    //
+      Font.Size := 14;                                              //
+      Font.Color := clBlue;                                         //
+      Font.Name := 'Tahoma';                                        //
+      Caption := '0';                                               //
+                                                                    //
+      Tag := n;                                                     //
+                                                                    //
+      OnMouseDown := LBtnMouseDown;                                 //
+    end;                                                            //
+  end;                                                              //
+                                                                    //
   Stop := False;                                                    //
-  Odd := True;
+  Odd := True;                                                      //
 end;                                                                //
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+procedure TMainForm.FormActivate(Sender: TObject);                  //
+begin                                                               //
+  InitBtn.SetFocus;                                                 //
+end;                                                                //
+                                                                    //
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 procedure TMainForm.FormDestroy(Sender: TObject);                   //
 begin                                                               //
+  PCILPTInfo.Free();                                                //
   Ring0.Free();                                                     //
 end;                                                                //
 //////////////////////////////////////////////////////////////////////
 
-
-
-procedure TMainForm.ChangeAddrBtnClick(Sender: TObject);
-begin
-  Base_LPT_Addr := StrToInt('$'+AddrEdit.Text);
-  AdrLab.Caption := 'Б. адрес: : $'+IntToHex(Base_LPT_Addr, 4);
-end;
 
 procedure TMainForm.AddrEditKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -446,6 +436,33 @@ begin
 end;
 
 
+
+procedure TMainForm.LPTPortsCBChange(Sender: TObject);
+var
+  n: byte;
+  pciAddress: DWORD;
+  Offset: WORD;
+begin
+  Offset := 0;
+
+  for n :=0 to Length(LPTInfo)-1 do
+    if LPTPortsCB.Items[LPTPortsCB.ItemIndex] = LPTInfo[n].Name then
+    begin 
+      pciAddress := (LPTInfo[n].FuncN and $7) + ((LPTInfo[n].DevN and $1F) shl 3)+((LPTInfo[n].BusN and $FF) shl 8);
+      if LPTInfo[n]. VendorID = $1C00 then Offset := $18; // WCH
+      if LPTInfo[n]. VendorID = $125B then Offset := $10; // Asix
+      if Offset = 0 then
+      begin
+        MessageDlg('Неизвестная плата', mtError, [mbOK], 0);
+        Break;
+      end;
+
+      Base_LPT_Addr := Ring0.PCI.ReadConfigWord(pciAddress, Offset)-1; // Адрес I/O
+      AdrLab.Caption := 'Б. адрес: : $'+IntToHex(Base_LPT_Addr, 4);
+
+//      ShowMessage(IntToHex(Data, 4));
+    end;
+end;
 
 ////////////////////////////////////////////////////////////
 procedure TMainForm.Data_BtnClick(Sender: TObject);       //
@@ -553,7 +570,7 @@ procedure TMainForm.ReadDataBtnClick(Sender: TObject);    //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  Data := Ring0.ReadIoPortByte(Base_LPT_Addr+0);          //
+  Data := Ring0.Port.ReadByte(Base_LPT_Addr+0);           //
   DataLab.Caption := ByteToStr(Data);                     //
                                                           //
   for n := 0 to 7 do                                      //
@@ -572,7 +589,7 @@ var                                                       //
   n: byte;                                                //
   Str: String;                                            //
 begin                                                     //
-  Status := Ring0.ReadIoPortByte(Base_LPT_Addr+1);        //
+  Status := Ring0.Port.ReadByte(Base_LPT_Addr+1);         //
   StatusLab.Caption := ByteToStr(Status);                 //
                                                           //
   for n := 0 to 7 do                                      //
@@ -588,7 +605,7 @@ procedure TMainForm.ReadControlBtnClick(Sender: TObject); //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  Control := Ring0.ReadIoPortByte(Base_LPT_Addr+2);       //
+  Control := Ring0.Port.ReadByte(Base_LPT_Addr+2);        //
   ControlLab.Caption := ByteToStr(Control);               //
                                                           //
   for n := 0 to 7 do                                      //
@@ -606,7 +623,7 @@ procedure TMainForm.ReadEPPAddrBtnClick(Sender: TObject); //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  EAddress := Ring0.ReadIoPortByte(Base_LPT_Addr+3);      //
+  EAddress := Ring0.Port.ReadByte(Base_LPT_Addr+3);       //
   EAddressLab.Caption := ByteToStr(EAddress);             //
                                                           //
   for n := 0 to 7 do                                      //
@@ -624,7 +641,7 @@ procedure TMainForm.ReadEPPDataBtnClick(Sender: TObject); //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  EData := Ring0.ReadIoPortByte(Base_LPT_Addr+4);         //
+  EData := Ring0.Port.ReadByte(Base_LPT_Addr+4);          //
   EDataLab.Caption := ByteToStr(EData);                   //
                                                           //
   for n := 0 to 7 do                                      //
@@ -642,7 +659,8 @@ procedure TMainForm.ReadECRBtnClick(Sender: TObject);     //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  ECRreg := Ring0.ReadIoPortByte(Base_LPT_Addr+$402);     //
+//  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+$402);      //
+  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+5);      //
   ECRLab.Caption := ByteToStr(ECRreg);                    //
                                                           //
   for n := 0 to 7 do                                      //
@@ -670,31 +688,33 @@ end;
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteDataBtnClick(Sender: TObject);    //
 begin                                                      //
-  Ring0.WriteIoPortByte(Base_LPT_Addr+0, Data);            //
+  Ring0.Port.WriteByte(Base_LPT_Addr+0, Data);             //
 end;                                                       //
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteControlBtnClick(Sender: TObject); //
 begin                                                      //
-  Ring0.WriteIoPortByte(Base_LPT_Addr+2, Control);         //
+  Ring0.Port.WriteByte(Base_LPT_Addr+2, Control);          //
 end;                                                       //
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteEPPAddrBtnClick(Sender: TObject); //
 begin                                                      //
-  Ring0.WriteIoPortByte(Base_LPT_Addr+3, EAddress);        //
+  Ring0.Port.WriteByte(Base_LPT_Addr+3, EAddress);         //
 end;                                                       //
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteEPPDataBtnClick(Sender: TObject); //
 begin                                                      //
-  Ring0.WriteIoPortByte(Base_LPT_Addr+4, EData);           //
+  Ring0.Port.WriteByte(Base_LPT_Addr+4, EData);            //
 end;                                                       //
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteESRBtnClick(Sender: TObject);     //
 begin                                                      //
-  Ring0.WriteIoPortByte(Base_LPT_Addr+$402, ECRreg);       //
+//  Ring0.Port.WriteByte(Base_LPT_Addr+$402, ECRreg);        //
+//  Ring0.Port.WriteByte(Base_LPT_Addr+7, ECRreg);           //
+  Ring0.Port.WriteWord(Base_LPT_Addr+5, $0100);
 end;                                                       //
 /////////////////////////////////////////////////////////////
 
@@ -715,10 +735,8 @@ begin
     Stop:= False;
     while True do
     begin
-//      Out32(Base_LPT_Addr, 0);
-//      Out32(Base_LPT_Addr, 1);
-      Ring0.WriteIoPortByte(Base_LPT_Addr+3, 0);
-      Ring0.WriteIoPortByte(Base_LPT_Addr+3, 1);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
 
       Application.ProcessMessages();
 
@@ -762,23 +780,18 @@ end;
 
 procedure TMainForm.InitBtnClick(Sender: TObject);
 begin
-  Ring0.WriteIoPortByte(Base_LPT_Addr+0, $00); // PDR
-  Ring0.WriteIoPortByte(Base_LPT_Addr+2, $C0); // PCR
-  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $00); // PXR
+  Ring0.Port.WriteByte(Base_LPT_Addr+0, $00); // PDR
+  Ring0.Port.WriteByte(Base_LPT_Addr+2, $C0); // PCR
+  Ring0.Port.WriteByte(Base_LPT_Addr+3, $00); // PXR
 end;
 
 procedure TMainForm.InitEPPBtnClick(Sender: TObject);
 begin
-  Ring0.WriteIoPortByte(Base_LPT_Addr+2, $24); // PCR (XX0X 0100) nWrite High, nDataStr High, Reset High, nAddrStr High
-//  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $04); // PXR (XXXX 01XX) EPP Mode-On, Data on (0) (Addr on (1))
-  Ring0.WriteIoPortByte(Base_LPT_Addr+3, $0C);
+  Ring0.Port.WriteByte(Base_LPT_Addr+2, $24); // PCR (XX0X 0100) nWrite High, nDataStr High, Reset High, nAddrStr High, DirIn 0
+//  Ring0.Port.WriteByte(Base_LPT_Addr+3, $04); // PXR (XXXX 01XX) EPP Mode-On, Data on (0) (Addr on (1))
+  Ring0.Port.WriteByte(Base_LPT_Addr+3, $0C); // Addr on (1)
 end;
 
-
-procedure TMainForm.LPTPortsCBChange(Sender: TObject);
-begin
-  //
-end;
 
 procedure TMainForm.WriteToPDRClick(Sender: TObject);
 var
@@ -786,10 +799,10 @@ var
   Str: string;
 begin
 
-  Str := Copy(DataEPPLab.Caption, 2, 2);;
+  Str := Copy(DataEPPLab.Caption, 2, 2);
 
   HexToBin(PChar(Str), Buff, 8);
-  Ring0.WriteIoPortByte(Base_LPT_Addr+0, Buff);
+  Ring0.Port.WriteByte(Base_LPT_Addr+0, Buff);
 
 
 //  Ring0.WriteIoPortByte(Base_LPT_Addr+0, 1);
@@ -801,8 +814,8 @@ procedure TMainForm.ReadFromPDRClick(Sender: TObject);
 var                                                       //
   D: byte;                                                //
 begin                                                     //
-  D := Ring0.ReadIoPortByte(Base_LPT_Addr+0);          //
-  DataEPPLab.Caption := ByteToStr(D);                     //
+  D := Ring0.Port.ReadByte(Base_LPT_Addr+0);              //
+  rDataEPPLab.Caption := ByteToStr(D);                    //
 end;
 
 
@@ -826,23 +839,23 @@ procedure TMainForm.BitBtn1Click(Sender: TObject);
 var
   LPTHandle: THandle;
   n: byte;
-  Mode: PARCLASS_NEGOTIATION_MASK;
+  ReqMode, Mode: PARCLASS_NEGOTIATION_MASK;
   lpOverlapped: POverlapped;
   ret: DWORD;
   Address: byte;
+
 begin
-//  for n := 0 to 9 do
+  for n := 0 to 9 do
   begin
-//    LPTHandle := CreateFile(PChar('LPT'+IntToStr(n+1)),
-    LPTHandle := CreateFile(PChar('LPT3'),
+    LPTHandle := CreateFile(PChar('LPT'+IntToStr(n+1)),
       GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING,
         FILE_FLAG_OVERLAPPED, 0);
 
     try
       if LPTHandle <> INVALID_HANDLE_VALUE then
       begin
-        LPTPortsCB.Items.Add('LPT'+IntToStr(n+1));
-        LPTPortsCB.ItemIndex := 0;
+//        LPTPortsCB.Items.Add('LPT'+IntToStr(n+1));
+//        LPTPortsCB.ItemIndex := 0;
 
 //        SetLength(LPTInfo, Length(LPTInfo)+1);
 //        LPTInfo[Length(LPTInfo)-1].Name := 'LPT'+IntToStr(n+1); // Добавим имя lpt порта
@@ -852,20 +865,25 @@ begin
  //       if not GetLPTInfo(LPTInfo[Length(LPTInfo)-1]) then Break;
 
 
+          ReqMode.usReadMask:= EPP_ANY;                                                                                                                          //
+          ReqMode. usWriteMask:= EPP_ANY;                                                                                                                        //
+          DeviceIoControl(LPTHandle, IOCTL_IEEE1284_NEGOTIATE, @ReqMode, sizeof(PARCLASS_NEGOTIATION_MASK), @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil); //
 
 
-        DeviceIoControl(LPTHandle, IOCTL_PAR_GET_DEVICE_CAPS, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
+
+        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_INFORMATION, nil, 0, @Mode, SizeOf(PARCLASS_NEGOTIATION_MASK), ret, nil);
+//        DeviceIoControl(LPTHandle, IOCTL_PAR_GET_DEVICE_CAPS, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 //        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID,
 //        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, lpOverlapped);
 //        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 
 //        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 
-        ShowMessage('LPT'+IntToStr(n+1)+': Read mode - '+IntToStr(Mode.usReadMask)+'   Write mode - '+IntToStr(Mode.usWriteMask));
-
         Address := $AA;
         DeviceIoControl(LPTHandle, IOCTL_PAR_SET_WRITE_ADDRESS, @Address, 1, nil, 0, ret, nil);
         WriteFile(LPTHandle, [$55], 1, ret, nil);
+
+        ShowMessage('LPT'+IntToStr(n+1)+': Read mode - '+IntToStr(Mode.usReadMask)+'   Write mode - '+IntToStr(Mode.usWriteMask)+'   ret: '+IntToStr(ret));
       end;                                                          //
     finally                                                         //
       CloseHandle(LPTHandle);                                       //

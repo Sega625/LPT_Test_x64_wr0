@@ -41,12 +41,47 @@ const
 	ECP_HW_IRQ	= $0200;	// Аппаратный ECP с IRQ
 	ECP_SW	= $0400;	// Программный ECP
 
+
+  PARALLEL_INIT = $01;
+  PARALLEL_AUTOFEED = $02;
+  PARALLEL_PAPER_EMPTY = $04;
+  PARALLEL_OFF_LINE = $08;
+  PARALLEL_POWER_OFF = $10;
+  PARALLEL_NOT_CONNECTED = $20;
+  PARALLEL_BUSY = $40;
+  PARALLEL_SELECTED = $80;
+
+  EPP_ANY = $0060; // любой из EPP
+
 type
   PARCLASS_NEGOTIATION_MASK = record
     usReadMask: word;
     usWriteMask: word;
   end;
   PPARCLASS_NEGOTIATION_MASK = ^PARCLASS_NEGOTIATION_MASK;
+
+  TPCIReg = record
+    VendorID   : WORD;
+    DeviceID   : WORD;
+    Command    : WORD;
+    Status     : WORD;
+    RevisionID : byte;
+    ClassCode  : DWORD;
+    Undef1     : DWORD;
+    IOBaseAddr0: DWORD;
+    IOBaseAddr1: DWORD;
+    IOBaseAddr2: DWORD;
+    IOBaseAddr3: DWORD;
+    IOBaseAddr4: DWORD;
+    IOBaseAddr5: DWORD;
+    IOBaseAddr6: DWORD;
+    subVendorID: WORD;
+    subDeviceID: WORD;
+    Undef41    : DWORD;
+    Undef42    : DWORD;
+    Undef43    : DWORD;
+    InteruptLinePin: DWORD;
+  end;
 
 //const
 //  {$IFDEF WIN32}
