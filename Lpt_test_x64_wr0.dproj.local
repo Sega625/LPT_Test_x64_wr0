@@ -2,20 +2,20 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>1899.12.30 00:00:00.000.565,=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\Win64\Debug\WinRing0.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.153,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_wr0.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_w.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.813,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\uLpt_test_x64_w.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.988,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\Lpt_test_x64_wr0.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\Lpt_test_x64_w.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.832,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Structs.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\Structs.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.813,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\uLpt_test_x64_w.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.153,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_w.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_wr0.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.965,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.208,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\Lpt_test_x64_w.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test_x64.dproj</Transaction>
     <Transaction>1899.12.30 00:00:00.000.872,=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Structs.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.471,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test_x64.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.473,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test.dproj=D:\Sega\Delphi\RAD_Projects\Project1.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.153,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_wr0.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_w.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.208,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test_x64.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\Lpt_test_x64_w.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.965,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.511,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.dfm=D:\Sega\Delphi\RAD_Projects\Unit1.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.813,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\uLpt_test_x64_w.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.473,D:\Sega\Delphi\RAD_Projects\Project1.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.988,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\Lpt_test_x64_w.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\Lpt_test_x64_wr0.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.511,D:\Sega\Delphi\RAD_Projects\Unit1.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.683,=D:\Sega\Delphi\RAD_Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.511,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.pas=D:\Sega\Delphi\RAD_Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.965,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.511,D:\Sega\Delphi\RAD_Projects\Unit1.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.471,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test_x64.dproj=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Lpt_test.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.832,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\Structs.pas=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\Structs.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.153,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_w.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_wr0\uLpt_test_x64_wr0.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.813,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64_winio\uLpt_test_x64_w.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.965,D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test_x64.dfm=D:\Sega\Delphi\RAD_Projects\LPT_Test_x64\uLpt_test.dfm</Transaction>
   </Transactions>
 </BorlandProject>

@@ -165,6 +165,10 @@ type
     ReadFromPDR: TBitBtn;
     BitBtn1: TBitBtn;
     rDataEPPLab: TLabel;
+    OffsetCB: TComboBox;
+    StartScanBtn: TBitBtn;
+    ScanMemo: TMemo;
+    ClearBtn: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Data_BtnClick(Sender: TObject);
@@ -195,6 +199,8 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure LPTPortsCBChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure StartScanBtnClick(Sender: TObject);
+    procedure ClearBtnClick(Sender: TObject);
   private
     Ring0: TWinRing0;
     PCILPTInfo: TPCILPTInfo;
@@ -223,7 +229,7 @@ implementation
 //////////////////////////////////////////////////////////////////////
 procedure TMainForm.FormCreate(Sender: TObject);                    //
 var                                                                 //
-  n, offset: byte;                                                  //
+  n, offset: WORD;                                                  //
 begin                                                               //
   Ring0 := TWinRing0.Create();                                      //
   if not Ring0.DLL.IsLoaded then                                    //
@@ -399,6 +405,10 @@ begin                                                               //
       OnMouseDown := LBtnMouseDown;                                 //
     end;                                                            //
   end;                                                              //
+                                                                    //
+  for n := $005 to $402 do                                          //
+    OffsetCB.Items.Add('$'+IntToHex(n, 3));                         //
+  OffsetCB.ItemIndex := 0;
                                                                     //
   Stop := False;                                                    //
   Odd := True;                                                      //
@@ -660,7 +670,7 @@ var                                                       //
   n: byte;                                                //
 begin                                                     //
 //  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+$402);      //
-  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+5);      //
+  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+OffsetCB.ItemIndex+5);
   ECRLab.Caption := ByteToStr(ECRreg);                    //
                                                           //
   for n := 0 to 7 do                                      //
@@ -712,9 +722,7 @@ end;                                                       //
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteESRBtnClick(Sender: TObject);     //
 begin                                                      //
-//  Ring0.Port.WriteByte(Base_LPT_Addr+$402, ECRreg);        //
-//  Ring0.Port.WriteByte(Base_LPT_Addr+7, ECRreg);           //
-  Ring0.Port.WriteWord(Base_LPT_Addr+5, $0100);
+  Ring0.Port.WriteWord(Base_LPT_Addr+OffsetCB.ItemIndex+5, ECRreg);
 end;                                                       //
 /////////////////////////////////////////////////////////////
 
@@ -732,11 +740,15 @@ begin
   begin
     TBitBtn(Sender).Caption := 'Стоп';
 
-    Stop:= False;
+//    Stop:= False;
+    Stop:= True;
     while True do
     begin
-      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
-      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
+//      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
+//      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
+      Ring0.Port.WriteByte(Base_LPT_Addr+2, 0);
+      Ring0.Port.WriteByte(Base_LPT_Addr+2, 1);
+      Ring0.Port.WriteByte(Base_LPT_Addr+2, 0);
 
       Application.ProcessMessages();
 
@@ -755,6 +767,41 @@ begin
 //  SetThreadPriority(GetCurrentThread, PrT);
 //  SetPriorityClass(GetCurrentProcess, PrC);
 end;
+
+procedure TMainForm.StartScanBtnClick(Sender: TObject);
+var
+  d: byte;
+begin
+  if TBitBtn(Sender).Caption = 'Старт' then
+  begin
+    TBitBtn(Sender).Caption := 'Стоп';
+
+    Stop:= False;
+    while True do
+    begin
+      d := Ring0.Port.ReadByte(Base_LPT_Addr+1);
+      d := d shr 6; // nAck
+      if (d and 1) = 0 then
+        ScanMemo.Lines.Add(IntToHex(d, 2));
+
+      Application.ProcessMessages();
+
+      if Stop then Break;
+    end;
+
+  end
+  else
+  begin
+    TBitBtn(Sender).Caption := 'Старт';
+    Stop := True;
+  end;
+end;
+
+procedure TMainForm.ClearBtnClick(Sender: TObject);
+begin
+  ScanMemo.Clear;
+end;
+
 
 
 procedure TMainForm.HChBoxClick(Sender: TObject);
@@ -890,7 +937,6 @@ begin
     end;                                                            //
   end;
 end;
-
 
 
 
