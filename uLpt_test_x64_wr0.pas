@@ -467,6 +467,7 @@ begin
         Break;
       end;
 
+//      Base_LPT_Addr := $3FF0;
       Base_LPT_Addr := Ring0.PCI.ReadConfigWord(pciAddress, Offset)-1; // Адрес I/O
       AdrLab.Caption := 'Б. адрес: : $'+IntToHex(Base_LPT_Addr, 4);
 
