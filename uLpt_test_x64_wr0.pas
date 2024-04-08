@@ -741,15 +741,15 @@ begin
   begin
     TBitBtn(Sender).Caption := 'Стоп';
 
-//    Stop:= False;
-    Stop:= True;
+    Stop:= False;
+//    Stop:= True;
     while True do
     begin
 //      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
 //      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
-      Ring0.Port.WriteByte(Base_LPT_Addr+2, 0);
-      Ring0.Port.WriteByte(Base_LPT_Addr+2, 1);
-      Ring0.Port.WriteByte(Base_LPT_Addr+2, 0);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
 
       Application.ProcessMessages();
 
