@@ -164,6 +164,11 @@ type
     DataEPPLab: TLabel;
     ReadFromPDR: TBitBtn;
     BitBtn1: TBitBtn;
+    rDataEPPLab: TLabel;
+    OffsetCB: TComboBox;
+    StartScanBtn: TBitBtn;
+    ScanMemo: TMemo;
+    ClearBtn: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Data_BtnClick(Sender: TObject);
@@ -194,6 +199,8 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure LPTPortsCBChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure StartScanBtnClick(Sender: TObject);
+    procedure ClearBtnClick(Sender: TObject);
   private
     Ring0: TWinRing0;
     PCILPTInfo: TPCILPTInfo;
@@ -222,7 +229,7 @@ implementation
 //////////////////////////////////////////////////////////////////////
 procedure TMainForm.FormCreate(Sender: TObject);                    //
 var                                                                 //
-  n, offset: byte;                                                  //
+  n, offset: WORD;                                                  //
 begin                                                               //
   Ring0 := TWinRing0.Create();                                      //
   if not Ring0.DLL.IsLoaded then                                    //
@@ -399,6 +406,10 @@ begin                                                               //
     end;                                                            //
   end;                                                              //
                                                                     //
+  for n := $005 to $402 do                                          //
+    OffsetCB.Items.Add('$'+IntToHex(n, 3));                         //
+  OffsetCB.ItemIndex := 0;
+                                                                    //
   Stop := False;                                                    //
   Odd := True;                                                      //
 end;                                                                //
@@ -456,6 +467,7 @@ begin
         Break;
       end;
 
+//      Base_LPT_Addr := $3FF0;
       Base_LPT_Addr := Ring0.PCI.ReadConfigWord(pciAddress, Offset)-1; // Адрес I/O
       AdrLab.Caption := 'Б. адрес: : $'+IntToHex(Base_LPT_Addr, 4);
 
@@ -658,7 +670,8 @@ procedure TMainForm.ReadECRBtnClick(Sender: TObject);     //
 var                                                       //
   n: byte;                                                //
 begin                                                     //
-  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+$402);      //
+//  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+$402);      //
+  ECRreg := Ring0.Port.ReadByte(Base_LPT_Addr+OffsetCB.ItemIndex+5);
   ECRLab.Caption := ByteToStr(ECRreg);                    //
                                                           //
   for n := 0 to 7 do                                      //
@@ -710,7 +723,7 @@ end;                                                       //
 /////////////////////////////////////////////////////////////
 procedure TMainForm.WriteESRBtnClick(Sender: TObject);     //
 begin                                                      //
-  Ring0.Port.WriteByte(Base_LPT_Addr+$402, ECRreg);        //
+  Ring0.Port.WriteWord(Base_LPT_Addr+OffsetCB.ItemIndex+5, ECRreg);
 end;                                                       //
 /////////////////////////////////////////////////////////////
 
@@ -729,10 +742,14 @@ begin
     TBitBtn(Sender).Caption := 'Стоп';
 
     Stop:= False;
+//    Stop:= True;
     while True do
     begin
+//      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
+//      Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
       Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
       Ring0.Port.WriteByte(Base_LPT_Addr+0, 1);
+      Ring0.Port.WriteByte(Base_LPT_Addr+0, 0);
 
       Application.ProcessMessages();
 
@@ -751,6 +768,41 @@ begin
 //  SetThreadPriority(GetCurrentThread, PrT);
 //  SetPriorityClass(GetCurrentProcess, PrC);
 end;
+
+procedure TMainForm.StartScanBtnClick(Sender: TObject);
+var
+  d: byte;
+begin
+  if TBitBtn(Sender).Caption = 'Старт' then
+  begin
+    TBitBtn(Sender).Caption := 'Стоп';
+
+    Stop:= False;
+    while True do
+    begin
+      d := Ring0.Port.ReadByte(Base_LPT_Addr+1);
+      d := d shr 6; // nAck
+      if (d and 1) = 0 then
+        ScanMemo.Lines.Add(IntToHex(d, 2));
+
+      Application.ProcessMessages();
+
+      if Stop then Break;
+    end;
+
+  end
+  else
+  begin
+    TBitBtn(Sender).Caption := 'Старт';
+    Stop := True;
+  end;
+end;
+
+procedure TMainForm.ClearBtnClick(Sender: TObject);
+begin
+  ScanMemo.Clear;
+end;
+
 
 
 procedure TMainForm.HChBoxClick(Sender: TObject);
@@ -778,7 +830,7 @@ procedure TMainForm.InitBtnClick(Sender: TObject);
 begin
   Ring0.Port.WriteByte(Base_LPT_Addr+0, $00); // PDR
   Ring0.Port.WriteByte(Base_LPT_Addr+2, $C0); // PCR
-  Ring0.Port.WriteByte(Base_LPT_Addr+3, $00); // PXR
+//  Ring0.Port.WriteByte(Base_LPT_Addr+3, $00); // PXR
 end;
 
 procedure TMainForm.InitEPPBtnClick(Sender: TObject);
@@ -811,7 +863,7 @@ var                                                       //
   D: byte;                                                //
 begin                                                     //
   D := Ring0.Port.ReadByte(Base_LPT_Addr+0);              //
-  DataEPPLab.Caption := ByteToStr(D);                     //
+  rDataEPPLab.Caption := ByteToStr(D);                    //
 end;
 
 
@@ -835,10 +887,11 @@ procedure TMainForm.BitBtn1Click(Sender: TObject);
 var
   LPTHandle: THandle;
   n: byte;
-  Mode: PARCLASS_NEGOTIATION_MASK;
+  ReqMode, Mode: PARCLASS_NEGOTIATION_MASK;
   lpOverlapped: POverlapped;
   ret: DWORD;
   Address: byte;
+
 begin
   for n := 0 to 9 do
   begin
@@ -860,27 +913,31 @@ begin
  //       if not GetLPTInfo(LPTInfo[Length(LPTInfo)-1]) then Break;
 
 
+          ReqMode.usReadMask:= EPP_ANY;                                                                                                                          //
+          ReqMode. usWriteMask:= EPP_ANY;                                                                                                                        //
+          DeviceIoControl(LPTHandle, IOCTL_IEEE1284_NEGOTIATE, @ReqMode, sizeof(PARCLASS_NEGOTIATION_MASK), @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil); //
 
 
-        DeviceIoControl(LPTHandle, IOCTL_PAR_GET_DEVICE_CAPS, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
+
+        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_INFORMATION, nil, 0, @Mode, SizeOf(PARCLASS_NEGOTIATION_MASK), ret, nil);
+//        DeviceIoControl(LPTHandle, IOCTL_PAR_GET_DEVICE_CAPS, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 //        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID,
 //        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, lpOverlapped);
 //        DeviceIoControl(LPTHandle, IOCTL_IEEE1284_GET_MODE, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 
 //        DeviceIoControl(LPTHandle, IOCTL_PAR_QUERY_DEVICE_ID, nil, 0, @Mode, sizeof(PARCLASS_NEGOTIATION_MASK), ret, nil);
 
-        ShowMessage('LPT'+IntToStr(n+1)+': Read mode - '+IntToStr(Mode.usReadMask)+'   Write mode - '+IntToStr(Mode.usWriteMask));
+        Address := $AA;
+        DeviceIoControl(LPTHandle, IOCTL_PAR_SET_WRITE_ADDRESS, @Address, 1, nil, 0, ret, nil);
+        WriteFile(LPTHandle, [$55], 1, ret, nil);
 
-//        Address := $AA;
-//        DeviceIoControl(LPTHandle, IOCTL_PAR_SET_WRITE_ADDRESS, @Address, 1, nil, 0, ret, nil);
-//        WriteFile(LPTHandle, [$55], 1, ret, nil);
+        ShowMessage('LPT'+IntToStr(n+1)+': Read mode - '+IntToStr(Mode.usReadMask)+'   Write mode - '+IntToStr(Mode.usWriteMask)+'   ret: '+IntToStr(ret));
       end;                                                          //
     finally                                                         //
       CloseHandle(LPTHandle);                                       //
     end;                                                            //
   end;
 end;
-
 
 
 

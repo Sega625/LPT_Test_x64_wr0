@@ -2,8 +2,8 @@ object MainForm: TMainForm
   Left = 551
   Top = 166
   Caption = 'LPT Tester x64 (Ring0)'
-  ClientHeight = 780
-  ClientWidth = 730
+  ClientHeight = 740
+  ClientWidth = 686
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,7 +29,7 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label18: TLabel
-    Left = 9
+    Left = 3
     Top = 197
     Width = 65
     Height = 17
@@ -42,7 +42,7 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label19: TLabel
-    Left = 9
+    Left = 3
     Top = 323
     Width = 67
     Height = 17
@@ -55,7 +55,7 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label38: TLabel
-    Left = 9
+    Left = 3
     Top = 434
     Width = 67
     Height = 17
@@ -68,7 +68,7 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label39: TLabel
-    Left = 9
+    Left = 3
     Top = 550
     Width = 67
     Height = 17
@@ -81,11 +81,11 @@ object MainForm: TMainForm
     ParentFont = False
   end
   object Label54: TLabel
-    Left = 9
-    Top = 665
-    Width = 88
+    Left = 3
+    Top = 663
+    Width = 60
     Height = 17
-    Caption = #1041'. '#1072#1076#1088#1077#1089'+$402'
+    Caption = #1041'. '#1072#1076#1088#1077#1089'+'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -121,7 +121,7 @@ object MainForm: TMainForm
     Font.Style = []
     ParentCtl3D = False
     ParentFont = False
-    TabOrder = 0
+    TabOrder = 1
     OnChange = LPTPortsCBChange
   end
   object DataGroupBox: TGroupBox
@@ -136,7 +136,7 @@ object MainForm: TMainForm
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 2
     object D0_Btn: TSpeedButton
       Left = 295
       Top = 49
@@ -511,7 +511,7 @@ object MainForm: TMainForm
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 3
     object C0_Btn: TSpeedButton
       Left = 295
       Top = 50
@@ -911,7 +911,7 @@ object MainForm: TMainForm
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 4
     object S3_Btn: TSpeedButton
       Left = 175
       Top = 49
@@ -1278,13 +1278,16 @@ object MainForm: TMainForm
     Width = 347
     Height = 112
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP Address (PXR)  '
+    Color = 14215640
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentBackground = False
+    ParentColor = False
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 5
     object EA0_Btn: TSpeedButton
       Left = 295
       Top = 33
@@ -1574,13 +1577,16 @@ object MainForm: TMainForm
     Width = 347
     Height = 112
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' EPP Data '
+    Color = 14215640
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentColor = False
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 6
     object ED0_Btn: TSpeedButton
       Left = 295
       Top = 33
@@ -1864,22 +1870,25 @@ object MainForm: TMainForm
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 7
     OnClick = GenBtnClick
   end
   object GroupBox3: TGroupBox
     Left = 120
-    Top = 620
+    Top = 621
     Width = 347
     Height = 111
     Caption = ' '#1056#1077#1075#1080#1089#1090#1088' ECP '
+    Color = clBtnFace
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentBackground = False
+    ParentColor = False
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 8
     object ECR0_Btn: TSpeedButton
       Left = 295
       Top = 33
@@ -2155,9 +2164,12 @@ object MainForm: TMainForm
     Left = 496
     Top = 98
     Width = 185
-    Height = 204
+    Height = 231
     Caption = ' '#1056#1077#1078#1080#1084' EPP '
-    TabOrder = 8
+    Color = clBtnFace
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 9
     object DataEPPLab: TLabel
       Left = 79
       Top = 96
@@ -2168,6 +2180,19 @@ object MainForm: TMainForm
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object rDataEPPLab: TLabel
+      Left = 58
+      Top = 176
+      Width = 72
+      Height = 19
+      Caption = '00000000'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
@@ -2197,7 +2222,7 @@ object MainForm: TMainForm
     end
     object ReadFromPDR: TBitBtn
       Left = 55
-      Top = 162
+      Top = 198
       Width = 79
       Height = 25
       Caption = #1055#1086#1083#1091#1095#1080#1090#1100
@@ -2217,16 +2242,72 @@ object MainForm: TMainForm
     Width = 113
     Height = 25
     Caption = #1048#1085#1080#1094#1080#1083#1080#1079#1072#1094#1080#1103
-    TabOrder = 9
+    TabOrder = 10
     OnClick = InitBtnClick
   end
   object BitBtn1: TBitBtn
     Left = 535
-    Top = 510
+    Top = 357
     Width = 113
     Height = 25
     Caption = 'Info'
-    TabOrder = 10
+    TabOrder = 11
     OnClick = BitBtn1Click
+  end
+  object OffsetCB: TComboBox
+    Left = 62
+    Top = 662
+    Width = 52
+    Height = 24
+    BevelInner = bvLowered
+    BevelKind = bkFlat
+    Ctl3D = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentCtl3D = False
+    ParentFont = False
+    TabOrder = 0
+    TabStop = False
+  end
+  object StartScanBtn: TBitBtn
+    Left = 514
+    Top = 424
+    Width = 57
+    Height = 25
+    Caption = #1057#1090#1072#1088#1090
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 12
+    OnClick = StartScanBtnClick
+  end
+  object ScanMemo: TMemo
+    Left = 577
+    Top = 421
+    Width = 94
+    Height = 309
+    ScrollBars = ssVertical
+    TabOrder = 13
+  end
+  object ClearBtn: TBitBtn
+    Left = 505
+    Top = 705
+    Width = 66
+    Height = 25
+    Caption = #1054#1095#1080#1089#1090#1080#1090#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 14
+    OnClick = ClearBtnClick
   end
 end

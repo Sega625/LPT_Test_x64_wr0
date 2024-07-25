@@ -830,7 +830,7 @@ procedure TMainForm.InitBtnClick(Sender: TObject);
 begin
   Ring0.Port.WriteByte(Base_LPT_Addr+0, $00); // PDR
   Ring0.Port.WriteByte(Base_LPT_Addr+2, $C0); // PCR
-  Ring0.Port.WriteByte(Base_LPT_Addr+3, $00); // PXR
+//  Ring0.Port.WriteByte(Base_LPT_Addr+3, $00); // PXR
 end;
 
 procedure TMainForm.InitEPPBtnClick(Sender: TObject);
